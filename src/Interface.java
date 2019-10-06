@@ -100,20 +100,24 @@ public class Interface extends JFrame implements ItemListener, ActionListener{
     {
         parse();
         String s = e.getActionCommand();
-        if (s.equals("Search")) {
-            String to_display = sqlhandler.search(include,exclude);
-            output.showMessageDialog(null,to_display);
-           // f.setContentPane(output);
-          //  f.repaint();
-          //  f.revalidate();
-        }
-        else {
-            String to_display = sqlhandler.search_save(include,exclude);
+        try {
+            if (s.equals("Search")) {
+                String to_display = sqlhandler.search(include,exclude);
+                output.showMessageDialog(null,to_display);
+                // f.setContentPane(output);
+                //  f.repaint();
+                //  f.revalidate();
+            }
+            else {
+                String to_display = sqlhandler.search_save(include,exclude);
 
-            output.showMessageDialog(null,to_display);
-        //    f.setContentPane(output);
-          //  f.repaint();
-          //  f.revalidate();
+                output.showMessageDialog(null,to_display);
+                //    f.setContentPane(output);
+                //  f.repaint();
+                //  f.revalidate();
+            }
+        } catch (Exception except) {
+            except.printStackTrace();
         }
     }
     public void parse(){
