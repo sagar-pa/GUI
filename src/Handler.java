@@ -91,7 +91,7 @@ public class Handler {
     }
 
     private String database_query_from_input(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
-        String sqlQuery = "SELECT * FROM movie1 WHERE original_title = \"Toy Story\";"; // FIXME: create a query string from the user input
+        String sqlQuery = "SELECT * FROM movie1 WHERE id = 862"; // FIXME: create a query string from the user input
         return sqlQuery;
     }
 
@@ -111,7 +111,7 @@ public class Handler {
         StringBuilder row = new StringBuilder();
 
         int numberFields = rs.getMetaData().getColumnCount();
-        for (int i = 0; i < numberFields; ++i) {
+        for (int i = 1; i <= numberFields; ++i) {
             row.append(rs.getString(i));
             row.append("\t");
         }
