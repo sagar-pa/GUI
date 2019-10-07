@@ -35,7 +35,7 @@ public class Handler {
         database_connect();
         String sqlQuery = database_query_from_input(include, exclude);
         ResultSet rs = database_search(sqlQuery);
-        
+
         while (rs.next()) {
             results.append(get_result_row(rs));
             results.append("\n");
@@ -91,7 +91,17 @@ public class Handler {
     }
 
     private String database_query_from_input(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
-        String sqlQuery = "SELECT * FROM movie1 WHERE id = 862"; // FIXME: create a query string from the user input
+        //for actor only
+        String sqlQuery = "SELECT original_title FROM (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) LEFT JOIN \"cast\" ON characters.castid = \"cast\".id WHERE \"cast\".name = ";
+        ArrayList<String> actors = include.get("Actor");
+        if(actors == null) return null; //no actors found
+
+        String actor = actors.get(0);
+        actor = actor.replaceAll("'", "''"); //format apostrophes
+        actor = "'" + actor + "';"; //surround with apostrophes and finish with semicolon
+
+        sqlQuery += actor;
+
         return sqlQuery;
     }
 

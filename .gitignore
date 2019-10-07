@@ -4,3 +4,6 @@
 .vscode/
 GUI.iml
 out/
+
+src/run.sh
+src/*.jar
