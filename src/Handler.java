@@ -90,6 +90,29 @@ public class Handler {
         }
     }
 
+    //given an actor, return the most popular castid. returns -1 on error
+    int getMostPopularActor(String actor) throws java.sql.SQLException{
+        int mostPopularCastId = -1;
+        int mostFrequent = -1;
+        StringBuilder results = new StringBuilder();
+
+        String sqlQuery = "SELECT castid, COUNT(1) FROM (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) LEFT JOIN \"cast\" ON characters.castid = \"cast\".id WHERE \"cast\".name = 'REPLACEME' AND \"characters\".iscrew = false GROUP BY castid;";
+        sqlQuery = sqlQuery.replaceAll("REPLACEME", actor);
+
+        ResultSet rs = database_search(sqlQuery);
+
+        while (rs.next()) {
+            int castId = rs.getInt("castid");
+            int freq = rs.getInt("count");
+            if(freq > mostFrequent) {
+                mostFrequent = freq;
+                mostPopularCastId = castId;
+            }
+        }
+
+        return mostPopularCastId;
+    }
+
     private String database_query_from_input(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
         //for actor only
         String sqlQuery = "SELECT original_title FROM (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) LEFT JOIN \"cast\" ON characters.castid = \"cast\".id WHERE \"cast\".name = ";
