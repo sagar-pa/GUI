@@ -4,13 +4,13 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Interface extends JFrame implements ActionListener{
-    static ArrayList<ArrayList<String>> q1Input;
-    static String[] q2Input;
-    static String[] q3Input;
-    static JPanel[] q1Panels,q2Panels,q3Panels;
-    static JTextField[] q1In, q2In, q3In;
-    static JPanel navBar,searBar;
-    static JFrame mainFrame;
+    private static ArrayList<ArrayList<String>> q1Input;
+    private static String[] q2Input;
+    private static String[] q3Input;
+    private static JPanel[] q1Panels,q2Panels,q3Panels;
+    private static JTextField[] q1In, q2In, q3In;
+    private static JPanel navBar,searBar;
+    private static JFrame mainFrame;
     private static Handler sqlhandler;
     private static JOptionPane output;
     private int currentQ;
