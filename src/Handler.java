@@ -15,15 +15,24 @@ public class Handler {
     private Integer query;
     private Connection conn;
     private Statement search;
+    private GraphHandler graphHandler;
 
     public Handler(){
         this.baseFilename = "queryOut";
         this.query = 0;
         this.conn = null;
         this.search = null;
+        graphHandler = new GraphHandler(this);
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
+        database_connect();
+        ResultSet rs = database_search("SELECT * FROM characters WHERE castid = 1");
+        while(rs.next()){
+            System.out.println(rs.getInt("movieid"));
+        }
+        return "tset";
+        /*
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
             String actor1 = input.get(0).get(0);
@@ -31,7 +40,7 @@ public class Handler {
             if(input.size() > 1){
                 to_exclude = input.get(1);
             }
-            return "Search " + actor1 + " " + actor2 + " " + to_exclude.toString();
+            return graphHandler.search(actor1,actor2,to_exclude);
         }
         else if (questionNum ==2){
             ArrayList<String> to_exclude = new ArrayList<String>();
@@ -47,6 +56,8 @@ public class Handler {
             String movie2 = input.get(0).get(1);
             return "Search " + movie1 + " " +movie2;
         }
+
+         */
     }
 
     public String search_save(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {

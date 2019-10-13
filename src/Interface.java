@@ -194,13 +194,13 @@ public class Interface extends JFrame implements ActionListener{
                 return false;
             }
             Input.add(new ArrayList<String>());
-            Input.get(0).add(q1In[0].getText());
-            Input.get(0).add(q1In[1].getText());
+            Input.get(0).add(q1In[0].getText().replaceAll("'","''"));
+            Input.get(0).add(q1In[1].getText().replaceAll("'","''"));
             if (!q1In[2].getText().isBlank()){
                 String to_exclude[]= q1In[2].getText().split(",");
                 Input.add(new ArrayList<String>());
                 for(String temp:to_exclude){
-                    Input.get(1).add(temp);
+                    Input.get(1).add(temp.replaceAll("'","''"));
                 }
             }
         }
@@ -225,7 +225,7 @@ public class Interface extends JFrame implements ActionListener{
                     String to_exclude[]= q2In[2].getText().split(",");
                     Input.add(new ArrayList<String>());
                     for(String temp:to_exclude){
-                        Input.get(1).add(temp);
+                        Input.get(1).add(temp.replaceAll("'","''"));
                     }
                 }
 
@@ -243,8 +243,8 @@ public class Interface extends JFrame implements ActionListener{
                 return false;
             }
             Input.add(new ArrayList<String>());
-            Input.get(0).add(q3In[0].getText());
-            Input.get(0).add(q3In[1].getText());
+            Input.get(0).add(q3In[0].getText().replaceAll("'","''"));
+            Input.get(0).add(q3In[1].getText().replaceAll("'","''"));
         }
         return true;
     }
