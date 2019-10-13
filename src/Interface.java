@@ -94,7 +94,6 @@ public class Interface extends JFrame implements ItemListener, ActionListener{
         f.setSize(500, 300);
 
         f.show();
-
     }
     public void actionPerformed(ActionEvent e)
     {

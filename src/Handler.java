@@ -24,6 +24,25 @@ public class Handler {
         this.search = null;
     }
 
+    public String yearCover(String start_year, String end_year) throws java.sql.SQLException {
+        database_connect();
+
+        String createActiveYearsView = "CREATE VIEW active_years(id, year)"
+            + "AS SELECT \"cast\".id, movie1.year"
+            + "FROM characters LEFT JOIN (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) ON characters.castid = \"cast\".id";
+        this.search = this.conn.createStatement();
+        ResultSet rs = search.executeQuery(createActiveYearsView);
+
+        String sqlQuery = "SELECT * FROM active_years";
+        this.search = this.conn.createStatement();
+        ResultSet active_years = search.executeQuery(createActiveYearsView);
+
+        YearCover yc = new YearCover(start_year, end_year, active_years);
+
+        database_disconnect();
+        return yc.toString();
+    }
+
     public String search(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
         StringBuilder results = new StringBuilder();
 
@@ -45,6 +64,7 @@ public class Handler {
     }
 
     public String search_save(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
+        /* *** *** ***
         // unique name for the file so multiple queries get saved in different files
         String queryFilename = this.baseFilename + this.query.toString();
         PrintWriter writer = null;
@@ -73,6 +93,11 @@ public class Handler {
         writer.close();
         this.query++;
         return "Saved to file: " + queryFilename;
+        *** *** *** */
+        // FIXME: testing 
+        String start_year = include.get("Actor").get(0); // FIXME
+        String end_year = exclude.get("Actor").get(0); // FIXME
+        return this.yearCover(start_year, end_year);
     }
 
     private void database_connect() {
