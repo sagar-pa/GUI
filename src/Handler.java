@@ -108,7 +108,7 @@ public class Handler {
         return sqlQuery;
     }
 
-    private ResultSet database_search(String sqlQuery) throws java.sql.SQLException {
+    public ResultSet database_search(String sqlQuery) throws java.sql.SQLException {
         this.search = this.conn.createStatement();
         ResultSet rs = search.executeQuery(sqlQuery);
         return rs;
@@ -120,7 +120,7 @@ public class Handler {
     }
 
     // does not check if resultset has next, do that in caller
-    private String get_result_row(ResultSet rs) throws java.sql.SQLException {
+    public String get_result_row(ResultSet rs) throws java.sql.SQLException {
         StringBuilder row = new StringBuilder();
 
         int numberFields = rs.getMetaData().getColumnCount();

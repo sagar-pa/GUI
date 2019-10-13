@@ -189,7 +189,8 @@ public class Interface extends JFrame implements ActionListener{
         Input.clear();
         if(currentQ == 1){
             if(q1In[0].getText().isBlank() || q1In[1].getText().isBlank()){
-                output.showMessageDialog(null,"Please enter the 2 required actors to find Degrees of separation for.");
+                output.showMessageDialog(null,"Please enter the 2 required " +
+                        "actors to find Degrees of separation for.");
                 return false;
             }
             Input.add(new ArrayList<String>());
@@ -205,7 +206,8 @@ public class Interface extends JFrame implements ActionListener{
         }
         else if(currentQ == 2) {
             if ((q2In[0].getText().length() < 4) || (q2In[1].getText().length() < 4)) {
-                output.showMessageDialog(null, "Please enter 2 valid years required to find smallest cover set for.");
+                output.showMessageDialog(null, "Please enter 2 valid years required " +
+                        "to find smallest cover set for.");
                 return false;
             }
             Input.add(new ArrayList<String>());
@@ -228,14 +230,16 @@ public class Interface extends JFrame implements ActionListener{
                 }
 
             } catch (NumberFormatException e) {
-                output.showMessageDialog(null, "Please enter 2 valid years required to find smallest cover set for.");
+                output.showMessageDialog(null, "Please enter 2 valid years required " +
+                        "to find smallest cover set for.");
                 return false;
             }
         }
 
         else {
             if ((q3In[0].getText().isBlank()) || (q3In[1].getText().isBlank())) {
-                output.showMessageDialog(null, "Please enter 2 valid movies required to find the most similar actors between them.");
+                output.showMessageDialog(null, "Please enter 2 valid movies required " +
+                        "to find the most similar actors between them.");
                 return false;
             }
             Input.add(new ArrayList<String>());
