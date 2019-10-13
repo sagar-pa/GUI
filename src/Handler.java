@@ -27,15 +27,15 @@ public class Handler {
     public String yearCover(String start_year, String end_year) throws java.sql.SQLException {
         database_connect();
 
-        String createActiveYearsView = "CREATE VIEW active_years(id, year)"
-            + "AS SELECT \"cast\".id, movie1.year"
-            + "FROM characters LEFT JOIN (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) ON characters.castid = \"cast\".id";
-        this.search = this.conn.createStatement();
-        ResultSet rs = search.executeQuery(createActiveYearsView);
+        //String createActiveYearsView = "CREATE VIEW active_years(id, year)"
+        //    + "AS SELECT \"cast\".id, movie1.year"
+        //    + "FROM characters LEFT JOIN (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) ON characters.castid = \"cast\".id";
+        //this.search = this.conn.createStatement();
+        //ResultSet rs = search.executeQuery(createActiveYearsView);
 
-        String sqlQuery = "SELECT * FROM active_years";
+        String sqlQuery = "SELECT * FROM active_years WHERE year IS NOT NULL AND year >= " + start_year + " AND year <= " + end_year;
         this.search = this.conn.createStatement();
-        ResultSet active_years = search.executeQuery(createActiveYearsView);
+        ResultSet active_years = search.executeQuery(sqlQuery);
 
         YearCover yc = new YearCover(start_year, end_year, active_years);
 
