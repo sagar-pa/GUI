@@ -17,62 +17,55 @@ public class Handler {
     private Statement search;
 
     public Handler(){
-        this.baseFilename = "queryOut.txt";
+        this.baseFilename = "queryOut";
         this.query = 0;
 
         this.conn = null;
         this.search = null;
     }
 
-    public String search(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
-        StringBuilder results = new StringBuilder();
-
-        // FIXME: debugging output
-        System.out.println(Arrays.asList(include).toString());
-        System.out.println(Arrays.asList(exclude).toString());
-
-        // connect to database and write each row in the results of the query to the display string
-        database_connect();
-        String sqlQuery = database_query_from_input(include, exclude);
-        ResultSet rs = database_search(sqlQuery);
-
-        while (rs.next()) {
-            results.append(get_result_row(rs));
-            results.append("\n");
+    public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
+        if (questionNum ==1){
+            ArrayList<String> to_exclude = new ArrayList<String>();
+            String actor1 = input.get(0).get(0);
+            String actor2 = input.get(0).get(1);
+            if(input.size() > 1){
+                to_exclude = input.get(1);
+            }
+            return "Search " + actor1 + " " + actor2 + " " + to_exclude.toString();
         }
-
-        return results.toString();
+        else if (questionNum ==2){
+            int year1 = Integer.parseInt(input.get(0).get(0));
+            int year2 = Integer.parseInt(input.get(0).get(1));
+            return "Search " + Integer.toString(year1) +" " + Integer.toString(year2);
+        }
+        else {
+            String movie1 = input.get(0).get(0);
+            String movie2 = input.get(0).get(1);
+            return "Search " + movie1 + " " +movie2;
+        }
     }
 
-    public String search_save(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
-        // unique name for the file so multiple queries get saved in different files
-        String queryFilename = this.baseFilename + this.query.toString();
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(queryFilename, "UTF-8");
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            e.printStackTrace();
+    public String search_save(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
+        if (questionNum ==1){
+            ArrayList<String> to_exclude = new ArrayList<String>();
+            String actor1 = input.get(0).get(0);
+            String actor2 = input.get(0).get(1);
+            if(input.size() > 1){
+                to_exclude = input.get(1);
+            }
+            return "Save " + actor1 + " " + actor2 + " " + to_exclude.toString();
         }
-
-        // FIXME: debugging output
-        System.out.println(Arrays.asList(include).toString());
-        System.out.println(Arrays.asList(exclude).toString());
-
-        // connect to database and write each row in the results of the query to the file
-        database_connect();
-        String sqlQuery = database_query_from_input(include, exclude);
-        ResultSet rs = database_search(sqlQuery);
-
-        while (rs.next()) {
-            writer.println(get_result_row(rs));
+        else if (questionNum ==2){
+            int year1 = Integer.parseInt(input.get(0).get(0));
+            int year2 = Integer.parseInt(input.get(0).get(1));
+            return "Save " + Integer.toString(year1) +" " + Integer.toString(year2);
         }
-
-        // cleanup
-        database_disconnect();
-        writer.close();
-        this.query++;
-        return "Saved to file: " + queryFilename;
+        else {
+            String movie1 = input.get(0).get(0);
+            String movie2 = input.get(0).get(1);
+            return "Save " + movie1 + " " +movie2;
+        }
     }
 
     private void database_connect() {
@@ -91,27 +84,7 @@ public class Handler {
     }
 
     //given an actor, return the most popular castid. returns -1 on error
-    int getMostPopularActor(String actor) throws java.sql.SQLException{
-        int mostPopularCastId = -1;
-        int mostFrequent = -1;
-        StringBuilder results = new StringBuilder();
 
-        String sqlQuery = "SELECT castid, COUNT(1) FROM (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) LEFT JOIN \"cast\" ON characters.castid = \"cast\".id WHERE \"cast\".name = 'REPLACEME' AND \"characters\".iscrew = false GROUP BY castid;";
-        sqlQuery = sqlQuery.replaceAll("REPLACEME", actor);
-
-        ResultSet rs = database_search(sqlQuery);
-
-        while (rs.next()) {
-            int castId = rs.getInt("castid");
-            int freq = rs.getInt("count");
-            if(freq > mostFrequent) {
-                mostFrequent = freq;
-                mostPopularCastId = castId;
-            }
-        }
-
-        return mostPopularCastId;
-    }
 
     private String database_query_from_input(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
         //for actor only
