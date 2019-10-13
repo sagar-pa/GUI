@@ -19,7 +19,6 @@ public class Handler {
     public Handler(){
         this.baseFilename = "queryOut";
         this.query = 0;
-
         this.conn = null;
         this.search = null;
     }
@@ -35,9 +34,13 @@ public class Handler {
             return "Search " + actor1 + " " + actor2 + " " + to_exclude.toString();
         }
         else if (questionNum ==2){
+            ArrayList<String> to_exclude = new ArrayList<String>();
             int year1 = Integer.parseInt(input.get(0).get(0));
             int year2 = Integer.parseInt(input.get(0).get(1));
-            return "Search " + Integer.toString(year1) +" " + Integer.toString(year2);
+            if(input.size() > 1){
+                to_exclude = input.get(1);
+            }
+            return "Search " + Integer.toString(year1) +" " + Integer.toString(year2) + " " + to_exclude.toString();
         }
         else {
             String movie1 = input.get(0).get(0);
@@ -57,9 +60,13 @@ public class Handler {
             return "Save " + actor1 + " " + actor2 + " " + to_exclude.toString();
         }
         else if (questionNum ==2){
+            ArrayList<String> to_exclude = new ArrayList<String>();
             int year1 = Integer.parseInt(input.get(0).get(0));
             int year2 = Integer.parseInt(input.get(0).get(1));
-            return "Save " + Integer.toString(year1) +" " + Integer.toString(year2);
+            if(input.size() > 1){
+                to_exclude = input.get(1);
+            }
+            return "Save " + Integer.toString(year1) +" " + Integer.toString(year2) + " " + to_exclude.toString();
         }
         else {
             String movie1 = input.get(0).get(0);

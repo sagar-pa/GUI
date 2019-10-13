@@ -26,25 +26,25 @@ public class Interface extends JFrame implements ActionListener{
 
         // Initialize arrays
         q1In = new JTextField[3];
-        q2In = new JTextField[2];
+        q2In = new JTextField[3];
         q3In = new JTextField[2];
         q1Panels = new JPanel[4];
-        q2Panels = new JPanel[3];
+        q2Panels = new JPanel[4];
         q3Panels = new JPanel[3];
 
         for(int i=0;i<2; i++){
-            q2In[i] = new JTextField(16);
             q3In[i] = new JTextField(16);
         }
 
         for(int i=0;i<3; i++){
-            q2Panels[i] = new JPanel();
             q3Panels[i] = new JPanel();
             q1In[i] = new JTextField(16);
+            q2In[i] = new JTextField(16);
         }
 
         for(int i=0;i<4; i++){
             q1Panels[i] = new JPanel();
+            q2Panels[i] = new JPanel();
         }
 
         // create add and remove buttons
@@ -91,7 +91,8 @@ public class Interface extends JFrame implements ActionListener{
         q2Panels[1].add(q2In[0]);
         q2Panels[2].add(new JLabel("Ending year "));
         q2Panels[2].add(q2In[1]);
-
+        q2Panels[3].add(new JLabel("Actors/Directors to exclude (separated by comma) "));
+        q2Panels[3].add(q2In[2]);
         //Question 3 panels initialization
         JLabel q3Title = new JLabel("Most similar actors between two movies");
         q3Title.setFont(titleFont);
@@ -114,7 +115,7 @@ public class Interface extends JFrame implements ActionListener{
         mainFrame.add(searBar);
 
         // Show to user
-        mainFrame.setSize(500, 250);
+        mainFrame.setSize(532, 250);
         mainFrame.setVisible(true);
 
     }
@@ -218,6 +219,14 @@ public class Interface extends JFrame implements ActionListener{
                 }
                 Input.get(0).add(small.toString());
                 Input.get(0).add(big.toString());
+                if (!q2In[2].getText().isBlank()){
+                    String to_exclude[]= q2In[2].getText().split(",");
+                    Input.add(new ArrayList<String>());
+                    for(String temp:to_exclude){
+                        Input.get(1).add(temp);
+                    }
+                }
+
             } catch (NumberFormatException e) {
                 output.showMessageDialog(null, "Please enter 2 valid years required to find smallest cover set for.");
                 return false;
