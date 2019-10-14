@@ -25,6 +25,7 @@ public class Handler {
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
+        database_connect();
 
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
