@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.io.PrintWriter;
 
 import java.sql.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+
 
 public class Handler {
     private String baseFilename;
@@ -27,12 +24,7 @@ public class Handler {
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
         database_connect();
-        ResultSet rs = database_search("SELECT * FROM characters WHERE castid = 1");
-        while(rs.next()){
-            System.out.println(rs.getInt("movieid"));
-        }
-        return "tset";
-        /*
+
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
             String actor1 = input.get(0).get(0);
@@ -57,7 +49,7 @@ public class Handler {
             return "Search " + movie1 + " " +movie2;
         }
 
-         */
+
     }
 
     public String search_save(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
@@ -98,6 +90,7 @@ public class Handler {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             e.printStackTrace();
+            System.exit(1);
         }
     }
 

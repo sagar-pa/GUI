@@ -115,7 +115,7 @@ public class Interface extends JFrame implements ActionListener{
         mainFrame.add(searBar);
 
         // Show to user
-        mainFrame.setSize(532, 250);
+        mainFrame.setSize(450, 250);
         mainFrame.setVisible(true);
 
     }

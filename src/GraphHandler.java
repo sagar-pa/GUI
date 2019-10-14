@@ -62,10 +62,10 @@ public class GraphHandler {
         parseIds(actor1,actor2,exclude);
         StringBuilder to_return = new StringBuilder();
         if(this.actor1 == -1 || this.actor2 == -1){
-            return "Actors to find degrees of Separation for not found.";
+            return "Actors to find degrees of Separation for not found. \n";
         }
         if(this.exclude.contains(-1)){
-            to_return.append("One or more of the actors to exclude not found. Ignoring them.");
+            to_return.append("One or more of the actors to exclude not found. Ignoring them. \n");
         }
         int castId,movieId;
         ResultSet rs = subset.database_search("SELECT * FROM characters");
@@ -88,7 +88,20 @@ public class GraphHandler {
         Vertex to_search2 = new Vertex(this.actor2,false);
         DijkstraShortestPath<Vertex, DefaultEdge> dijkstraAlg = new DijkstraShortestPath<>(CharacterGraph);
         GraphPath<Vertex, DefaultEdge> Path = dijkstraAlg.getPath(to_search1,to_search2);
-        to_return.append(Path.toString());
+        List<Vertex> vertices= Path.getVertexList();
+        int separation = 0;
+        for (Vertex v: vertices){
+           if(v.isMovie){
+               to_return.append(getMovieName(v.id) + ", ");
+               separation++;
+           }
+           else
+           {
+               to_return.append(getActorName(v.id) + ", ");
+           }
+
+        }
+        to_return.append("\n The degrees of Separation between the two actors is: " + Integer.toString(separation)+ ".");
         return to_return.toString();
 
     }
@@ -114,6 +127,42 @@ public class GraphHandler {
         }
 
         return mostPopularCastId;
+    }
+    public String getMovieName(int id) throws java.sql.SQLException{
+        String tosearch = "SELECT * FROM movie1 WHERE id=" + Integer.toString(id);
+        String to_return = "default";
+        try {
+            ResultSet rs = subset.database_search(tosearch);
+
+            while (rs.next()) {
+                to_return = rs.getString("original_title");
+                to_return = to_return + " (" + rs.getString("release_date").substring(0,4) + ")";
+            }
+        }
+        catch (java.sql.SQLException e){
+            System.out.println("FUck");
+            e.printStackTrace();
+            System.exit(2);
+        }
+        return to_return;
+    }
+    public String getActorName(int id) throws java.sql.SQLException{
+        String tosearch = "SELECT * FROM cast WHERE id=" + Integer.toString(id);
+        String to_return = "default2";
+        try {
+            ResultSet rs = subset.database_search(tosearch);
+
+            while (rs.next()) {
+                to_return = rs.getString("name");
+            }
+        }
+        catch (java.sql.SQLException e){
+            System.out.println("FUUck");
+            e.printStackTrace();
+            System.exit(2);
+        }
+        return to_return;
+
     }
 
 }
