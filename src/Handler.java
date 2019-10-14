@@ -13,6 +13,7 @@ public class Handler {
     private Connection conn;
     private Statement search;
     private GraphHandler graphHandler;
+    private SimilarActors similarActors;
 
     public Handler(){
         this.baseFilename = "queryOut";
@@ -23,7 +24,6 @@ public class Handler {
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
-        database_connect();
 
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
@@ -85,9 +85,12 @@ public class Handler {
         String user = "mikechacko";
         String password = "studentpwd";
 
+        System.out.println("Attempting to connect to database...");
+
         try {
             Class.forName(driver_name);
             this.conn = DriverManager.getConnection(url, user, password);
+            System.out.println("Connection successful!");
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             e.printStackTrace();
