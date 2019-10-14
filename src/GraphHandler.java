@@ -36,19 +36,19 @@ class Vertex {
 public class GraphHandler {
     Handler subset;
     int actor1, actor2;
-    List<Integer> exclude;
-    Graph<Vertex, DefaultEdge> CharacterGraph;
+    ArrayList<Integer> exclude;
+
 
     public GraphHandler(Handler subset) {
         this.subset = subset;
-        CharacterGraph = new Multigraph<Vertex,DefaultEdge>(DefaultEdge.class);
-        exclude= new ArrayList<Integer>();
+        exclude= new ArrayList<>();
     }
 
     private void parseIds(String actor1, String actor2, ArrayList<String> exclude){
         try {
             this.actor1 = getMostPopularActor(actor1);
             this.actor2 = getMostPopularActor(actor2);
+            this.exclude.clear();
             for (String actor : exclude){
                 this.exclude.add(getMostPopularActor(actor));
             }
@@ -60,6 +60,8 @@ public class GraphHandler {
 
     public String search(String actor1, String actor2, ArrayList<String> exclude) throws java.sql.SQLException{
         parseIds(actor1,actor2,exclude);
+        Graph<Vertex, DefaultEdge> CharacterGraph = null;
+        CharacterGraph = new Multigraph<Vertex,DefaultEdge>(DefaultEdge.class);
         StringBuilder to_return = new StringBuilder();
         if(this.actor1 == -1 || this.actor2 == -1){
             return "Actors to find degrees of Separation for not found. \n";
@@ -73,7 +75,7 @@ public class GraphHandler {
             if(!rs.getBoolean("isCrew")) {
                 castId = rs.getInt("castid");
                 movieId = rs.getInt("movieid");
-                if(!exclude.contains(castId)){
+                if(!this.exclude.contains(castId)){
                     Vertex v1 = new Vertex(castId,false);
                     Vertex v2 = new Vertex(movieId, true);
                     CharacterGraph.addVertex(v1);
@@ -92,16 +94,17 @@ public class GraphHandler {
         int separation = 0;
         for (Vertex v: vertices){
            if(v.isMovie){
-               to_return.append(getMovieName(v.id) + ", ");
+               to_return.append(getMovieName(v.id) + ",  ");
                separation++;
            }
            else
            {
-               to_return.append(getActorName(v.id) + ", ");
+               to_return.append(getActorName(v.id) +",  ");
            }
 
         }
         to_return.append("\n The degrees of Separation between the two actors is: " + Integer.toString(separation)+ ".");
+        CharacterGraph = null;
         return to_return.toString();
 
     }
@@ -147,7 +150,7 @@ public class GraphHandler {
         return to_return;
     }
     public String getActorName(int id) throws java.sql.SQLException{
-        String tosearch = "SELECT * FROM cast WHERE id=" + Integer.toString(id);
+        String tosearch = "SELECT name FROM \"cast\" WHERE id=" + Integer.toString(id);
         String to_return = "default2";
         try {
             ResultSet rs = subset.database_search(tosearch);

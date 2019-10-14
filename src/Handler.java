@@ -27,6 +27,7 @@ public class Handler {
 
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
+            to_exclude.clear();
             String actor1 = input.get(0).get(0);
             String actor2 = input.get(0).get(1);
             if(input.size() > 1){
