@@ -21,6 +21,7 @@ public class Handler {
         this.conn = null;
         this.search = null;
         graphHandler = new GraphHandler(this);
+        similarActors = new SimilarActors(this);
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
@@ -47,7 +48,7 @@ public class Handler {
         else {
             String movie1 = input.get(0).get(0);
             String movie2 = input.get(0).get(1);
-            return "Search " + movie1 + " " +movie2;
+            return similarActors.search(movie1, movie2);
         }
 
 

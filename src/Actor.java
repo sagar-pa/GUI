@@ -11,7 +11,6 @@ public class Actor {
     public HashSet<String> directorsWorkedWith;
     public HashSet<Movie> moviesActedIn;
     public HashSet<Actor> actorsWorkedWith;
-    public String mostCommonGenre;
 
     @Override
     public boolean equals(Object o) {
@@ -24,6 +23,13 @@ public class Actor {
     @Override
     public int hashCode() {
         return Objects.hash(castid);
+    }
+
+    public Actor(int id){
+        directorsWorkedWith = new HashSet<String>();
+        moviesActedIn = new HashSet<Movie>();
+        actorsWorkedWith = new HashSet<Actor>();
+        this.castid = id;
     }
 
     public Actor(int id, String name, String character){

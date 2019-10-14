@@ -22,6 +22,11 @@ public class Movie {
         return Objects.hash(id);
     }
 
+    public Movie(int id){
+        genre = new ArrayList<String>();
+        this.id = id;
+    }
+
     public Movie(int id, String name){
         genre = new ArrayList<String>();
         this.id = id;
