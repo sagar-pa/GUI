@@ -18,6 +18,7 @@ public class Handler {
         this.query = 0;
         this.conn = null;
         this.search = null;
+        //Create on the heap
         graphHandler = new GraphHandler(this);
         similarActors = new SimilarActors(this);
         yearCover = new YearCover(this);

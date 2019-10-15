@@ -30,11 +30,18 @@ class Vertex {
     }
 }
 
-
+/*
+Downloads the Character, generates a map and stores it on the Heap. We made this choice while being aware of our
+client and the backend. Because the client is expected to have at least 200MB of virtual memory on their device,
+generating the map on the heap instead of making exponential calls to the memory saves exponential amount of time,
+making our call go from 15 minutes to 10 seconds.
+ */
 public class GraphHandler {
     Handler handler;
     int actor1, actor2;
     ArrayList<Integer> exclude;
+    Graph<Vertex, DefaultEdge> CharacterGraph = null;
+    ResultSet characterTable = null;
 
 
     public GraphHandler(Handler subset) {
@@ -58,7 +65,6 @@ public class GraphHandler {
 
     public String search(String actor1, String actor2, ArrayList<String> exclude) throws java.sql.SQLException{
         parseIds(actor1,actor2,exclude);
-        Graph<Vertex, DefaultEdge> CharacterGraph = null;
         CharacterGraph = new Multigraph<Vertex,DefaultEdge>(DefaultEdge.class);
         StringBuilder to_return = new StringBuilder();
         if(this.actor1 == -1 || this.actor2 == -1){
@@ -68,11 +74,11 @@ public class GraphHandler {
             to_return.append("One or more of the actors to exclude not found. Ignoring them. \n");
         }
         int castId,movieId;
-        ResultSet rs = handler.databaseSearch("SELECT * FROM characters");
-        while(rs.next()){
-            if(!rs.getBoolean("isCrew")) {
-                castId = rs.getInt("castid");
-                movieId = rs.getInt("movieid");
+        characterTable = handler.databaseSearch("SELECT * FROM characters");
+        while(characterTable.next()){
+            if(!characterTable.getBoolean("isCrew")) {
+                castId = characterTable.getInt("castid");
+                movieId = characterTable.getInt("movieid");
                 if(!this.exclude.contains(castId)){
                     Vertex v1 = new Vertex(castId,false);
                     Vertex v2 = new Vertex(movieId, true);
