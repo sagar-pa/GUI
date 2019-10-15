@@ -21,7 +21,7 @@ public class Handler {
         graphHandler = new GraphHandler(this);
         similarActors = new SimilarActors(this);
         yearCover = new YearCover(this);
-        database_connect();
+        databaseConnect();
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
@@ -36,24 +36,22 @@ public class Handler {
             return graphHandler.search(actor1,actor2,to_exclude);
         }
         else if (questionNum ==2){
-            ArrayList<String> to_exclude = new ArrayList<String>();
+            ArrayList<String> toExclude = new ArrayList<String>();
             int year1 = Integer.parseInt(input.get(0).get(0));
             int year2 = Integer.parseInt(input.get(0).get(1));
             if(input.size() > 1){
-                to_exclude = input.get(1);
+                toExclude = input.get(1);
             }
-            return yearCover.search(year1,year2,to_exclude);
+            return yearCover.search(year1,year2,toExclude);
         }
         else {
             String movie1 = input.get(0).get(0);
             String movie2 = input.get(0).get(1);
             return similarActors.search(movie1, movie2);
         }
-
-
     }
 
-    public String search_save(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
+    public String searchSave(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
         String output;
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
@@ -94,8 +92,8 @@ public class Handler {
         }
     }
 
-    private void database_connect() {
-        String driver_name = "org.postgresql.Driver";
+    private void databaseConnect() {
+        String driverName = "org.postgresql.Driver";
         String url = "jdbc:postgresql://db-315.cse.tamu.edu/mikechacko_db";
         String user = "mikechacko";
         String password = "studentpwd";
@@ -103,7 +101,7 @@ public class Handler {
         System.out.println("Attempting to connect to database...");
 
         try {
-            Class.forName(driver_name);
+            Class.forName(driverName);
             this.conn = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -112,13 +110,13 @@ public class Handler {
         }
     }
 
-    public ResultSet database_search(String sqlQuery) throws java.sql.SQLException {
+    public ResultSet databaseSearch(String sqlQuery) throws java.sql.SQLException {
         this.search = this.conn.createStatement();
         ResultSet rs = search.executeQuery(sqlQuery);
         return rs;
     }
 
-    public void database_disconnect() throws java.sql.SQLException {
+    public void databaseDisconnect() throws java.sql.SQLException {
         this.search.close();
         this.conn.close();
     }
