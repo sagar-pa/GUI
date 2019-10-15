@@ -1,8 +1,6 @@
 import java.sql.ResultSet;
 import java.util.Objects;
 import org.jgrapht.*;
-import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.*;
-import org.jgrapht.alg.interfaces.*;
 import org.jgrapht.alg.shortestpath.*;
 import org.jgrapht.graph.*;
 
@@ -70,7 +68,7 @@ public class GraphHandler {
             to_return.append("One or more of the actors to exclude not found. Ignoring them. \n");
         }
         int castId,movieId;
-        ResultSet rs = subset.database_search("SELECT * FROM characters");
+        ResultSet rs = subset.databaseSearch("SELECT * FROM characters");
         while(rs.next()){
             if(!rs.getBoolean("isCrew")) {
                 castId = rs.getInt("castid");
@@ -118,7 +116,7 @@ public class GraphHandler {
         String sqlQuery = "SELECT castid, COUNT(1) FROM (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) LEFT JOIN \"cast\" ON characters.castid = \"cast\".id WHERE \"cast\".name = 'REPLACEME' AND \"characters\".iscrew = false GROUP BY castid;";
         sqlQuery = sqlQuery.replaceAll("REPLACEME", actor);
 
-        ResultSet rs = subset.database_search(sqlQuery);
+        ResultSet rs = subset.databaseSearch(sqlQuery);
 
         while (rs.next()) {
             int castId = rs.getInt("castid");
@@ -134,7 +132,7 @@ public class GraphHandler {
     public String getMovieName(int id) throws java.sql.SQLException{
         String tosearch = "SELECT * FROM movie1 WHERE id=" + Integer.toString(id);
         String to_return = "default";
-        ResultSet rs = subset.database_search(tosearch);
+        ResultSet rs = subset.databaseSearch(tosearch);
         while (rs.next()) {
              to_return = rs.getString("original_title");
              to_return = to_return + " (" + rs.getString("release_date").substring(0,4) + ")";
@@ -145,7 +143,7 @@ public class GraphHandler {
     public String getActorName(int id) throws java.sql.SQLException{
         String tosearch = "SELECT name FROM \"cast\" WHERE id=" + Integer.toString(id);
         String to_return = "default2";
-        ResultSet rs = subset.database_search(tosearch);
+        ResultSet rs = subset.databaseSearch(tosearch);
         while (rs.next()) {
             to_return = rs.getString("name");
         }

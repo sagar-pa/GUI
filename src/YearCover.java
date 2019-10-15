@@ -25,7 +25,7 @@ public class YearCover {
         //this.handler.database_connect();
         String sql_query = "SELECT * FROM active_years WHERE year IS NOT NULL AND year >= "
             + start_year.toString() + " AND year <= " + end_year.toString();
-        ResultSet active_years = this.handler.database_search(sql_query);
+        ResultSet active_years = this.handler.databaseSearch(sql_query);
 
         // setup varjables for the algorithm
         HashMap<Integer, String> name_by_id = new HashMap<Integer, String>();

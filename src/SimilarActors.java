@@ -1,14 +1,7 @@
 import java.util.*;
-
-import java.io.PrintWriter;
-
-import java.sql.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import static java.lang.Math.max;
 
 public class SimilarActors {
     private String baseFilename;
@@ -24,28 +17,27 @@ public class SimilarActors {
 
         genres = new HashMap<Integer, ArrayList<String>>();
         actorsInMovie = new HashMap<Integer, ArrayList<Integer>>();
-
     }
 
     private void getAllCharacters() throws java.sql.SQLException{
         String sqlQuery = "SELECT * FROM characters;";
 
-        ResultSet rs = handler.database_search(sqlQuery);
+        ResultSet rs = handler.databaseSearch(sqlQuery);
 
         while (rs.next()) {
             if(rs.getBoolean("iscrew" ) == true) {
                 continue;
             }
 
-            int movie_id = rs.getInt("movieid");
-            int cast_id = rs.getInt("castid");
-            ArrayList<Integer> alist = actorsInMovie.get(movie_id);
+            int movieId = rs.getInt("movieid");
+            int castId = rs.getInt("castid");
+            ArrayList<Integer> alist = actorsInMovie.get(movieId);
             if(alist == null){
                 alist = new ArrayList<Integer>();
-                alist.add(cast_id);
-                actorsInMovie.put(movie_id, alist);
+                alist.add(castId);
+                actorsInMovie.put(movieId, alist);
             } else {
-                alist.add(cast_id);
+                alist.add(castId);
             }
         }
     }
@@ -53,23 +45,25 @@ public class SimilarActors {
     private void getAllGenres() throws java.sql.SQLException{
         String sqlQuery = "SELECT * FROM genres;";
 
-        ResultSet rs = handler.database_search(sqlQuery);
+        ResultSet rs = handler.databaseSearch(sqlQuery);
 
         while (rs.next()) {
-            int movie_id = rs.getInt("movie_id");
+            int movieId = rs.getInt("movie_id");
             String genre_name = rs.getString("name");
-            ArrayList<String> list = genres.get(movie_id);
+            ArrayList<String> list = genres.get(movieId);
             if(list == null){
                 list = new ArrayList<String>();
                 list.add(genre_name);
-                genres.put(movie_id, list);
+                genres.put(movieId, list);
             } else {
                 list.add(genre_name);
             }
         }
     }
 
-    //given two movies, print two actors who are most similar and give the reasons
+    /*
+    * Given two movies, output the two most similar actors.
+    */
     String search(String movie1, String movie2) throws java.sql.SQLException {
 
         if(genres.isEmpty()) {
@@ -219,7 +213,7 @@ public class SimilarActors {
 
         sqlQuery = sqlQuery.replaceAll("REPLACEME", movie);
 
-        ResultSet rs = handler.database_search(sqlQuery);
+        ResultSet rs = handler.databaseSearch(sqlQuery);
         HashSet<Actor> list = new HashSet<Actor>();
 
         while (rs.next()) {
@@ -256,7 +250,7 @@ public class SimilarActors {
                 "WHERE castid = REPLACEME;";
         sqlQuery = sqlQuery.replaceAll("REPLACEME", Integer.toString(actor.castid));
 
-        ResultSet rs = handler.database_search(sqlQuery);
+        ResultSet rs = handler.databaseSearch(sqlQuery);
 
         while (rs.next()) {
             int movieId = rs.getInt("movieid");
@@ -275,7 +269,7 @@ public class SimilarActors {
         //Movies Acted In
         String sqlQuery = "SELECT name AS actor_name FROM \"cast\" WHERE id = " + castid + ";";
 
-        ResultSet rs = handler.database_search(sqlQuery);
+        ResultSet rs = handler.databaseSearch(sqlQuery);
 
         if (rs.next()) {
             return rs.getString("actor_name");

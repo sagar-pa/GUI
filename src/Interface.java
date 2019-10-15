@@ -119,7 +119,7 @@ public class Interface extends JFrame implements ActionListener{
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 try {
-                    sqlhandler.database_disconnect();
+                    sqlhandler.databaseDisconnect();
                     System.exit(0);
                 }
                 catch(Exception e){
@@ -187,7 +187,7 @@ public class Interface extends JFrame implements ActionListener{
             else {
                 boolean success = parse();
                 if(success) {
-                    String to_display = sqlhandler.search_save(currentQ,Input);
+                    String to_display = sqlhandler.searchSave(currentQ,Input);
                     output.showMessageDialog(null, to_display);
                 }
             }
