@@ -12,13 +12,13 @@ public class Interface extends JFrame implements ActionListener{
     private static JTextField[] q1In, q2In, q3In;
     private static JPanel navBar,searBar;
     private static JFrame mainFrame;
-    private static Handler sqlhandler;
+    private static Handler handler;
     private static JOptionPane output;
     private static int currentQ;
 
     public static void main (String[] args){
         Interface s = new Interface();
-        sqlhandler = new Handler();
+        handler = new Handler();
         navBar = new JPanel();
         searBar = new JPanel();
 
@@ -119,7 +119,7 @@ public class Interface extends JFrame implements ActionListener{
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 try {
-                    sqlhandler.databaseDisconnect();
+                    handler.databaseDisconnect();
                     System.exit(0);
                 }
                 catch(Exception e){
@@ -180,14 +180,14 @@ public class Interface extends JFrame implements ActionListener{
             else if (s.equals("Search")) {
                 boolean success = parse();
                 if (success){
-                    String to_display = sqlhandler.search(currentQ,Input);
+                    String to_display = handler.search(currentQ,Input);
                     output.showMessageDialog(null,to_display);
                 }
             }
             else {
                 boolean success = parse();
                 if(success) {
-                    String to_display = sqlhandler.searchSave(currentQ,Input);
+                    String to_display = handler.searchSave(currentQ,Input);
                     output.showMessageDialog(null, to_display);
                 }
             }

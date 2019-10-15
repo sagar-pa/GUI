@@ -26,14 +26,14 @@ public class Handler {
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
         if (questionNum ==1){
-            ArrayList<String> to_exclude = new ArrayList<String>();
-            to_exclude.clear();
+            ArrayList<String> toExclude = new ArrayList<String>();
+            toExclude.clear();
             String actor1 = input.get(0).get(0);
             String actor2 = input.get(0).get(1);
             if(input.size() > 1){
-                to_exclude = input.get(1);
+                toExclude = input.get(1);
             }
-            return graphHandler.search(actor1,actor2,to_exclude);
+            return graphHandler.search(actor1,actor2,toExclude);
         }
         else if (questionNum ==2){
             ArrayList<String> toExclude = new ArrayList<String>();
@@ -54,14 +54,14 @@ public class Handler {
     public String searchSave(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
         String output;
         if (questionNum ==1){
-            ArrayList<String> to_exclude = new ArrayList<String>();
-            to_exclude.clear();
+            ArrayList<String> toExclude = new ArrayList<String>();
+            toExclude.clear();
             String actor1 = input.get(0).get(0);
             String actor2 = input.get(0).get(1);
             if(input.size() > 1){
-                to_exclude = input.get(1);
+                toExclude = input.get(1);
             }
-            output = graphHandler.search(actor1,actor2,to_exclude);
+            output = graphHandler.search(actor1,actor2,toExclude);
             this.baseFilename = "degreesQuery" + Integer.toString(this.query) +".txt";
         }
         else if (questionNum ==2){
