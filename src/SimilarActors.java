@@ -8,10 +8,15 @@ public class SimilarActors {
     private Integer query;
     private Connection conn;
     private Statement search;
-    private HashMap<Integer, ArrayList<String>> genres;
-    private HashMap<Integer, ArrayList<Integer>> actorsInMovie; //maps an actor castid to a movieid
     private Handler handler;
 
+    // Maps a movie_id to a list of Genre strings
+    private HashMap<Integer, ArrayList<String>> genres;
+
+    // Maps a movie_id to a list of cast_ids
+    private HashMap<Integer, ArrayList<Integer>> actorsInMovie;
+
+    // Constructor for SimilarActors
     public SimilarActors(Handler handler){
         this.handler = handler;
 
@@ -19,53 +24,15 @@ public class SimilarActors {
         actorsInMovie = new HashMap<Integer, ArrayList<Integer>>();
     }
 
-    private void getAllCharacters() throws java.sql.SQLException{
-        String sqlQuery = "SELECT * FROM characters;";
-
-        ResultSet rs = handler.databaseSearch(sqlQuery);
-
-        while (rs.next()) {
-            if(rs.getBoolean("iscrew" ) == true) {
-                continue;
-            }
-
-            int movieId = rs.getInt("movieid");
-            int castId = rs.getInt("castid");
-            ArrayList<Integer> alist = actorsInMovie.get(movieId);
-            if(alist == null){
-                alist = new ArrayList<Integer>();
-                alist.add(castId);
-                actorsInMovie.put(movieId, alist);
-            } else {
-                alist.add(castId);
-            }
-        }
-    }
-
-    private void getAllGenres() throws java.sql.SQLException{
-        String sqlQuery = "SELECT * FROM genres;";
-
-        ResultSet rs = handler.databaseSearch(sqlQuery);
-
-        while (rs.next()) {
-            int movieId = rs.getInt("movie_id");
-            String genre_name = rs.getString("name");
-            ArrayList<String> list = genres.get(movieId);
-            if(list == null){
-                list = new ArrayList<String>();
-                list.add(genre_name);
-                genres.put(movieId, list);
-            } else {
-                list.add(genre_name);
-            }
-        }
-    }
-
     /*
-    * Given two movies, output the two most similar actors.
-    */
+     * Given two movies, output the two most similar actors.
+     * this is the function called by the GUI. It gives each pair
+     * of actors in the movies a similarity score and outputs
+     * the actors with the highest similarity score.
+     */
     String search(String movie1, String movie2) throws java.sql.SQLException {
 
+        // Get the genre & character data
         if(genres.isEmpty()) {
             getAllGenres();
         }
@@ -73,9 +40,15 @@ public class SimilarActors {
             getAllCharacters();
         }
 
+        // Get a list of the actors in both movies
         HashSet<Actor> actorsInMovie1 = getActorsInMovie(movie1);
         HashSet<Actor> actorsInMovie2 = getActorsInMovie(movie2);
 
+        /*
+        *  For each actor in both movies, calculate important stats about them
+        *  such as what movies they've acted in (and the genres of those movies),
+        *  as well as what actors were in those movies.
+        */
         for(Actor a : actorsInMovie1){
             computeActorStats(a);
         }
@@ -83,10 +56,12 @@ public class SimilarActors {
             computeActorStats(a);
         }
 
+        // Setup the max score calculation
         double maxScore = -1;
         Actor mostSimilarActor1 = null;
         Actor mostSimilarActor2 = null;
 
+        // Calculate the similarity score for each pair of actors, and get the actors
         for(Actor a1 : actorsInMovie1) {
             for(Actor a2 : actorsInMovie2) {
                 double score = getSimilarityScore(a1, a2);
@@ -98,27 +73,30 @@ public class SimilarActors {
             }
         }
 
+        // Get the reasons for the similarity
         String output = getSimilarityReasons(mostSimilarActor1, mostSimilarActor2);
 
-        System.out.println(output);
         return output;
     }
 
+    // Returns a string with the reason of similarity between two actors
     String getSimilarityReasons(Actor a1, Actor a2) throws java.sql.SQLException{
 
+        // Store the actor's names
         a1.name = getActorName(a1.castid);
         a2.name = getActorName(a2.castid);
-
         String output = a1.name + " and " + a2.name + " are the most similar actors. ";
 
         int mutualMovies = 0;
         //Number of mutual movies worked on + number of common movie genres
         if(!a1.moviesActedIn.isEmpty() && !a2.moviesActedIn.isEmpty()){
+            // Count the number of movies they have in common
             Set<Movie> commonMovies = new HashSet<Movie>(a1.moviesActedIn);
             commonMovies.retainAll(a2.moviesActedIn);
             mutualMovies += commonMovies.size();
             output += "They have acted in " + mutualMovies + " mutual movies! ";
 
+            // Check if they usually act in the same type of movies
             String genre = getMostFrequentGenre(a1);
             if(genre.equals(getMostFrequentGenre(a2))){
                 output += "Both of their most popular genres are " + genre + "! ";
@@ -128,6 +106,7 @@ public class SimilarActors {
         int mutualCostars = 0;
         //Number of mutual actors worked with
         if(!a1.actorsWorkedWith.isEmpty() && !a2.actorsWorkedWith.isEmpty()){
+            // Count the number of co-stars they share
             Set<Actor> commonActors = new HashSet<Actor>(a1.actorsWorkedWith);
             commonActors.retainAll(a2.actorsWorkedWith);
             mutualCostars += commonActors.size();
@@ -146,10 +125,12 @@ public class SimilarActors {
 
         //Number of mutual movies worked on + number of common movie genres
         if(!a1.moviesActedIn.isEmpty() && !a2.moviesActedIn.isEmpty()){
+            // Count the number of movies they have in common
             Set<Movie> commonMovies = new HashSet<Movie>(a1.moviesActedIn);
             commonMovies.retainAll(a2.moviesActedIn);
             mutualMovies += commonMovies.size();
 
+            // Check if they usually act in the same type of movies
             if(getMostFrequentGenre(a1).equals(getMostFrequentGenre(a2))){
                 sameMostFrequentGenre = true;
             }
@@ -157,11 +138,13 @@ public class SimilarActors {
 
         //Number of mutual actors worked with
         if(!a1.actorsWorkedWith.isEmpty() && !a2.actorsWorkedWith.isEmpty()){
+            // Count the number of co-stars they share
             Set<Actor> commonActors = new HashSet<Actor>(a1.actorsWorkedWith);
             commonActors.retainAll(a2.actorsWorkedWith);
             mutualCostars += commonActors.size();
         }
 
+        // Calculate the score
         points = (mutualMovies * 30) + (mutualCostars/7.0);
         if(sameMostFrequentGenre){
             points += 40;
@@ -169,6 +152,7 @@ public class SimilarActors {
         return points; //number of points here is your total score
     }
 
+    // Given an actor, find their most frequent genre
     String getMostFrequentGenre(Actor a){
         if(a.moviesActedIn.isEmpty()) return null;
 
@@ -223,10 +207,14 @@ public class SimilarActors {
             list.add(a);
         }
 
+        if(list.isEmpty()){
+            throw new java.sql.SQLException(movie + " is not a valid movie!");
+        }
+
         return list;
     }
 
-    //Returns a list of Actors who act in 'movie'
+    //Returns a list of Actors who acted in movieid
     HashSet<Actor> getActorsIDsInMovie(int movieid) throws java.sql.SQLException {
         ArrayList<Integer> alist = actorsInMovie.get(movieid);
         if(alist == null){
@@ -241,6 +229,11 @@ public class SimilarActors {
         return list;
     }
 
+
+    /*
+     *  Calculate information about an actor such as what movies they've acted in (and the genres of those movies),
+     *  as well as what actors were in those movies.
+     */
     private void computeActorStats(Actor actor) throws java.sql.SQLException{
         //Movies Acted In
         String sqlQuery = "SELECT m.id AS movieid, m.original_title AS movie_title " +
@@ -254,9 +247,6 @@ public class SimilarActors {
 
         while (rs.next()) {
             int movieId = rs.getInt("movieid");
-            //String movie_name = rs.getString("movie_title");
-
-            //Movie m = new Movie(movieId, movie_name);
             Movie m = new Movie(movieId);
             m.genre = genres.get(m.id); //get genres
             actor.actorsWorkedWith.addAll(getActorsIDsInMovie(m.id));
@@ -265,6 +255,7 @@ public class SimilarActors {
         }
     }
 
+    // Given an actor's castid, return the actor's name
     private String getActorName(int castid) throws java.sql.SQLException{
         //Movies Acted In
         String sqlQuery = "SELECT name AS actor_name FROM \"cast\" WHERE id = " + castid + ";";
@@ -276,5 +267,49 @@ public class SimilarActors {
         }
 
         return null;
+    }
+
+    // Get the characters from the database
+    private void getAllCharacters() throws java.sql.SQLException{
+        String sqlQuery = "SELECT * FROM characters;";
+
+        ResultSet rs = handler.databaseSearch(sqlQuery);
+
+        while (rs.next()) {
+            if(rs.getBoolean("iscrew" ) == true) {
+                continue;
+            }
+
+            int movieId = rs.getInt("movieid");
+            int castId = rs.getInt("castid");
+            ArrayList<Integer> alist = actorsInMovie.get(movieId);
+            if(alist == null){
+                alist = new ArrayList<Integer>();
+                alist.add(castId);
+                actorsInMovie.put(movieId, alist);
+            } else {
+                alist.add(castId);
+            }
+        }
+    }
+
+    // Get the genres from the database
+    private void getAllGenres() throws java.sql.SQLException{
+        String sqlQuery = "SELECT * FROM genres;";
+
+        ResultSet rs = handler.databaseSearch(sqlQuery);
+
+        while (rs.next()) {
+            int movieId = rs.getInt("movie_id");
+            String genre_name = rs.getString("name");
+            ArrayList<String> list = genres.get(movieId);
+            if(list == null){
+                list = new ArrayList<String>();
+                list.add(genre_name);
+                genres.put(movieId, list);
+            } else {
+                list.add(genre_name);
+            }
+        }
     }
 }
