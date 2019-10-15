@@ -41,11 +41,14 @@ public class YearCover {
         // build the subsets
         // FIXME: exclude stuff
         HashMap<Integer, HashSet<Integer>> active_years_by_actor = new HashMap<>();
+        HashSet<String> exclusions = new HashSet<String>(to_exclude);
         try {
             while (active_years.next()) {
                 if (null == active_years_by_actor.get(active_years.getInt("id"))) {
-                    active_years_by_actor.put(active_years.getInt("id"), new HashSet<Integer>());
-                    name_by_id.put(active_years.getInt("id"), active_years.getString("name"));
+                    if (!exclusions.contains(active_years.getString("name"))) {
+                        active_years_by_actor.put(active_years.getInt("id"), new HashSet<Integer>());
+                        name_by_id.put(active_years.getInt("id"), active_years.getString("name"));
+                    }
                 }
                 active_years_by_actor.get(active_years.getInt("id")).add(active_years.getInt("year"));
             }
