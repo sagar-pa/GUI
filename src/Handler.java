@@ -14,6 +14,7 @@ public class Handler {
     private Statement search;
     private GraphHandler graphHandler;
     private SimilarActors similarActors;
+    private YearCover yearCover;
 
     public Handler(){
         this.baseFilename = "queryOut";
@@ -22,6 +23,7 @@ public class Handler {
         this.search = null;
         graphHandler = new GraphHandler(this);
         similarActors = new SimilarActors(this);
+        yearCover = new YearCover(this);
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
@@ -44,7 +46,7 @@ public class Handler {
             if(input.size() > 1){
                 to_exclude = input.get(1);
             }
-            return "Search " + Integer.toString(year1) +" " + Integer.toString(year2) + " " + to_exclude.toString();
+            return yearCover.search(year1,year2,to_exclude);
         }
         else {
             String movie1 = input.get(0).get(0);
