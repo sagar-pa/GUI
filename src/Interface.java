@@ -116,6 +116,17 @@ public class Interface extends JFrame implements ActionListener{
 
         // Show to user
         mainFrame.setSize(450, 250);
+        mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                try {
+                    sqlhandler.database_disconnect();
+                    System.exit(0);
+                }
+                catch(Exception e){
+                    System.exit(1);
+                }
+            }
+        });
         mainFrame.setVisible(true);
 
     }
@@ -181,7 +192,7 @@ public class Interface extends JFrame implements ActionListener{
                 }
             }
         } catch (Exception except) {
-            output.showMessageDialog(null,"Try again");
+            output.showMessageDialog(null,"Try again.");
         }
     }
     private boolean parse(){

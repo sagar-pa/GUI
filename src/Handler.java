@@ -1,9 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
-import java.io.PrintWriter;
-
 import java.sql.*;
 
 
@@ -24,11 +21,10 @@ public class Handler {
         graphHandler = new GraphHandler(this);
         similarActors = new SimilarActors(this);
         yearCover = new YearCover(this);
+        database_connect();
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
-        database_connect();
-
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
             to_exclude.clear();
@@ -58,14 +54,17 @@ public class Handler {
     }
 
     public String search_save(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
+        String output;
         if (questionNum ==1){
             ArrayList<String> to_exclude = new ArrayList<String>();
+            to_exclude.clear();
             String actor1 = input.get(0).get(0);
             String actor2 = input.get(0).get(1);
             if(input.size() > 1){
                 to_exclude = input.get(1);
             }
-            return "Save " + actor1 + " " + actor2 + " " + to_exclude.toString();
+            output = graphHandler.search(actor1,actor2,to_exclude);
+            this.baseFilename = "degreesQuery" + Integer.toString(this.query) +".txt";
         }
         else if (questionNum ==2){
             ArrayList<String> to_exclude = new ArrayList<String>();
@@ -74,12 +73,24 @@ public class Handler {
             if(input.size() > 1){
                 to_exclude = input.get(1);
             }
-            return "Save " + Integer.toString(year1) +" " + Integer.toString(year2) + " " + to_exclude.toString();
+            output = yearCover.search(year1,year2,to_exclude);
+            this.baseFilename = "coverQuery" + Integer.toString(this.query) +".txt";
         }
         else {
             String movie1 = input.get(0).get(0);
             String movie2 = input.get(0).get(1);
-            return "Save " + movie1 + " " +movie2;
+            output = similarActors.search(movie1, movie2);
+            this.baseFilename = "similarQuery" + Integer.toString(this.query) +".txt";
+        }
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(this.baseFilename));
+            writer.write(output);
+            writer.close();
+            this.query++;
+            return "Saved to: " + this.baseFilename;
+        }
+        catch(Exception e) {
+            return "Error while saving to file. Please check write permissions.";
         }
     }
 
@@ -94,30 +105,11 @@ public class Handler {
         try {
             Class.forName(driver_name);
             this.conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connection successful!");
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
-    }
-
-    //given an actor, return the most popular castid. returns -1 on error
-
-
-    private String database_query_from_input(HashMap<String, ArrayList<String>> include, HashMap<String, ArrayList<String>> exclude) throws java.sql.SQLException {
-        //for actor only
-        String sqlQuery = "SELECT original_title FROM (characters LEFT JOIN movie1 ON characters.movieid = movie1.id) LEFT JOIN \"cast\" ON characters.castid = \"cast\".id WHERE \"cast\".name = ";
-        ArrayList<String> actors = include.get("Actor");
-        if(actors == null) return null; //no actors found
-
-        String actor = actors.get(0);
-        actor = actor.replaceAll("'", "''"); //format apostrophes
-        actor = "'" + actor + "';"; //surround with apostrophes and finish with semicolon
-
-        sqlQuery += actor;
-
-        return sqlQuery;
     }
 
     public ResultSet database_search(String sqlQuery) throws java.sql.SQLException {
@@ -126,21 +118,8 @@ public class Handler {
         return rs;
     }
 
-    private void database_disconnect() throws java.sql.SQLException {
+    public void database_disconnect() throws java.sql.SQLException {
         this.search.close();
         this.conn.close();
-    }
-
-    // does not check if resultset has next, do that in caller
-    public String get_result_row(ResultSet rs) throws java.sql.SQLException {
-        StringBuilder row = new StringBuilder();
-
-        int numberFields = rs.getMetaData().getColumnCount();
-        for (int i = 1; i <= numberFields; ++i) {
-            row.append(rs.getString(i));
-            row.append("\t");
-        }
-
-        return row.toString();
     }
 }

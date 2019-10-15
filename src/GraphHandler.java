@@ -134,38 +134,22 @@ public class GraphHandler {
     public String getMovieName(int id) throws java.sql.SQLException{
         String tosearch = "SELECT * FROM movie1 WHERE id=" + Integer.toString(id);
         String to_return = "default";
-        try {
-            ResultSet rs = subset.database_search(tosearch);
-
-            while (rs.next()) {
-                to_return = rs.getString("original_title");
-                to_return = to_return + " (" + rs.getString("release_date").substring(0,4) + ")";
-            }
-        }
-        catch (java.sql.SQLException e){
-            System.out.println("FUck");
-            e.printStackTrace();
-            System.exit(2);
+        ResultSet rs = subset.database_search(tosearch);
+        while (rs.next()) {
+             to_return = rs.getString("original_title");
+             to_return = to_return + " (" + rs.getString("release_date").substring(0,4) + ")";
         }
         return to_return;
     }
+
     public String getActorName(int id) throws java.sql.SQLException{
         String tosearch = "SELECT name FROM \"cast\" WHERE id=" + Integer.toString(id);
         String to_return = "default2";
-        try {
-            ResultSet rs = subset.database_search(tosearch);
-
-            while (rs.next()) {
-                to_return = rs.getString("name");
-            }
+        ResultSet rs = subset.database_search(tosearch);
+        while (rs.next()) {
+            to_return = rs.getString("name");
         }
-        catch (java.sql.SQLException e){
-            System.out.println("FUUck");
-            e.printStackTrace();
-            System.exit(2);
-        }
-        return to_return;
-
+         return to_return;
     }
 
 }
