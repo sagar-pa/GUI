@@ -15,85 +15,81 @@ public class YearCover {
         this.handler = handler;
     }
 
-    public String search(Integer start_year, Integer end_year, ArrayList<String> to_exclude) throws java.sql.SQLException {
+    public String search(Integer startYear, Integer endYear, ArrayList<String> toExclude) throws java.sql.SQLException {
         // make sure years requested are contiguous in the database
-        if (start_year < 1890 || end_year > 2018) {
+        if (startYear < 1890 || endYear > 2018) {
             return "Start year must be >= 1890 and end year must be <= 2018";
         }
 
         // make query
-        //this.handler.database_connect();
-        String sql_query = "SELECT * FROM active_years WHERE year IS NOT NULL AND year >= "
-            + start_year.toString() + " AND year <= " + end_year.toString();
-        ResultSet active_years = this.handler.databaseSearch(sql_query);
+        String sqlQuery = "SELECT * FROM active_years WHERE year IS NOT NULL AND year >= "
+            + startYear.toString() + " AND year <= " + endYear.toString();
+        ResultSet activeYears = this.handler.databaseSearch(sqlQuery);
 
-        // setup varjables for the algorithm
-        HashMap<Integer, String> name_by_id = new HashMap<Integer, String>();
-        TreeMap<Integer, Integer> id_by_year = new TreeMap<Integer, Integer>();
+        // setup variables for the algorithm
+        HashMap<Integer, String> nameById = new HashMap<Integer, String>();
+        TreeMap<Integer, Integer> idByYear = new TreeMap<Integer, Integer>();
 
         // build the universes
         HashSet<Integer> yearniverse = new HashSet<Integer>();
-        for (Integer i = start_year; i <= end_year; ++i) {
+        for (Integer i = startYear; i <= endYear; ++i) {
             yearniverse.add(i);
         }
         HashSet<Integer> actorverse = new HashSet<Integer>();
 
         // build the subsets
-        // FIXME: exclude stuff
-        HashMap<Integer, HashSet<Integer>> active_years_by_actor = new HashMap<>();
-        HashSet<String> exclusions = new HashSet<String>(to_exclude);
+        HashMap<Integer, HashSet<Integer>> activeYearsByActor = new HashMap<>();
+        HashSet<String> exclusions = new HashSet<String>(toExclude);
         try {
-            while (active_years.next()) {
-                if (null == active_years_by_actor.get(active_years.getInt("id"))) {
-                    if (!exclusions.contains(active_years.getString("name"))) {
-                        active_years_by_actor.put(active_years.getInt("id"), new HashSet<Integer>());
-                        name_by_id.put(active_years.getInt("id"), active_years.getString("name"));
+            while (activeYears.next()) {
+                if (null == activeYearsByActor.get(activeYears.getInt("id"))) {
+                    if (!exclusions.contains(activeYears.getString("name"))) {
+                        activeYearsByActor.put(activeYears.getInt("id"), new HashSet<Integer>());
+                        nameById.put(activeYears.getInt("id"), activeYears.getString("name"));
                     }
                 }
-                active_years_by_actor.get(active_years.getInt("id")).add(active_years.getInt("year"));
+                activeYearsByActor.get(activeYears.getInt("id")).add(activeYears.getInt("year"));
             }
         } catch (java.sql.SQLException e) {
             e.printStackTrace();
         }
 
         // iteratively...
-        Integer maxyearsactorid = -1;
-        Integer maxyears = -1;
-        Integer entryyears = -1;
+        Integer maxYearsActorId = -1;
+        Integer maxYears = -1;
+        Integer entryYears = -1;
         while (!actorverse.equals(yearniverse)) {
             // select the actor with the most uncovered years
-            maxyearsactorid = -1;
-            maxyears = -1;
+            maxYearsActorId = -1;
+            maxYears = -1;
 
-            for (Map.Entry<Integer, HashSet<Integer>> entry : active_years_by_actor.entrySet()) {
-                entryyears = entry.getValue().size();
+            for (Map.Entry<Integer, HashSet<Integer>> entry : activeYearsByActor.entrySet()) {
+                entryYears = entry.getValue().size();
                 if (entry.getKey() != 0) { // sometimes there is an error with the keys
-                    if (entryyears > maxyears) {
-                        maxyears = entryyears;
-                        maxyearsactorid = entry.getKey();
+                    if (entryYears > maxYears) {
+                        maxYears = entryYears;
+                        maxYearsActorId = entry.getKey();
                     }
                 }
             }
 
             // remove that actor from the available actors and add to the actorverse and the printable list of ids by year
-            HashSet<Integer> completedyears = active_years_by_actor.remove(maxyearsactorid);
-            actorverse.addAll(completedyears);
-            for (Integer year : completedyears) {
-                id_by_year.put(year, maxyearsactorid);
+            HashSet<Integer> completedYears = activeYearsByActor.remove(maxYearsActorId);
+            actorverse.addAll(completedYears);
+            for (Integer year : completedYears) {
+                idByYear.put(year, maxYearsActorId);
             }
 
             // update actors so they only have uncovered years
-            for (Map.Entry<Integer, HashSet<Integer>> entry : active_years_by_actor.entrySet()) {
-                entry.getValue().removeAll(completedyears);
+            for (Map.Entry<Integer, HashSet<Integer>> entry : activeYearsByActor.entrySet()) {
+                entry.getValue().removeAll(completedYears);
             }
         }
 
-        // cleanup
-        //this.handler.database_disconnect();
         // return a string representation for the GUI
         StringBuilder cover = new StringBuilder();
-        for (Integer year : id_by_year.keySet()) {
-            cover.append(year.toString() + ": " + name_by_id.get(id_by_year.get(year)).toString() + '\n');
+        for (Integer year : idByYear.keySet()) {
+            cover.append(year.toString() + ": " + nameById.get(idByYear.get(year)).toString() + '\n');
         }
         return cover.toString();
     }
