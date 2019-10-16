@@ -10,15 +10,28 @@ import java.sql.ResultSet;
 
 public class YearCover {
     private Handler handler = null;
+    private Integer startYear = -1;
+    private Integer endYear = -1;
+    private HashSet<String> exclusions = null;
+
+    private static final Integer NO_ACTOR_ID = -2;
 
     public YearCover(Handler handler) {
         this.handler = handler;
+        this.exclusions = new HashSet<String>();
     }
 
-    public String search(Integer startYear, Integer endYear, ArrayList<String> toExclude) throws java.sql.SQLException {
+    public String search(Integer inputStartYear, Integer inputEndYear, ArrayList<String> toExclude) throws java.sql.SQLException {
         // make sure years requested are contiguous in the database
-        if (startYear < 1890 || endYear > 2018) {
+        if (inputStartYear < 1890 || inputEndYear > 2018) {
             return "Start year must be >= 1890 and end year must be <= 2018";
+        }
+
+        // clear exclusions if the years are different than prior queries
+        if (startYear != inputStartYear || endYear != inputEndYear) {
+            exclusions.clear();
+            startYear = inputStartYear;
+            endYear = inputEndYear;
         }
 
         // make query
@@ -39,7 +52,7 @@ public class YearCover {
 
         // build the subsets
         HashMap<Integer, HashSet<Integer>> activeYearsByActor = new HashMap<>();
-        HashSet<String> exclusions = new HashSet<String>(toExclude);
+        exclusions.addAll(toExclude);
         while (activeYears.next()) {
              if (null == activeYearsByActor.get(activeYears.getInt("id"))) {
                  if (!exclusions.contains(activeYears.getString("name"))) {
@@ -47,9 +60,13 @@ public class YearCover {
                       nameById.put(activeYears.getInt("id"), activeYears.getString("name"));
                  }
              }
-             if(activeYearsByActor.get(activeYears.getInt("id")) != null)
-             activeYearsByActor.get(activeYears.getInt("id")).add(activeYears.getInt("year"));
+             if (activeYearsByActor.get(activeYears.getInt("id")) != null) {
+                 activeYearsByActor.get(activeYears.getInt("id")).add(activeYears.getInt("year"));
+             }
         }
+        // add a special ID to represent no actor in the case a year can't be covered
+        nameById.put(YearCover.NO_ACTOR_ID, "No non-excluded actors cover this year");
+
         // iteratively...
         Integer maxYearsActorId = -1;
         Integer maxYears = -1;
@@ -71,10 +88,22 @@ public class YearCover {
 
             // remove that actor from the available actors and add to the actorverse and the printable list of ids by year
             HashSet<Integer> completedYears = activeYearsByActor.remove(maxYearsActorId);
+            // if the largest sub-cover is 0, a year cover can't be built for this range + exclusions
+            if (completedYears.isEmpty()) {
+                HashSet<Integer> uncoverableYears = new HashSet<Integer>(yearniverse);
+                yearniverse.removeAll(actorverse);
+                for (Integer uncoverableYear : uncoverableYears) {
+                    idByYear.put(uncoverableYear, YearCover.NO_ACTOR_ID);
+                }
+                // stop trying to cover if a year cover can't be built for this range + exclusions
+                break;
+            }
             actorverse.addAll(completedYears);
             for (Integer year : completedYears) {
                 idByYear.put(year, maxYearsActorId);
             }
+            // also add that actor to the exclusions so the next query gives a different year cover
+            exclusions.add(nameById.get(maxYearsActorId));
 
             // update actors so they only have uncovered years
             for (Map.Entry<Integer, HashSet<Integer>> entry : activeYearsByActor.entrySet()) {
