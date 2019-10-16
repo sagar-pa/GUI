@@ -40,20 +40,16 @@ public class YearCover {
         // build the subsets
         HashMap<Integer, HashSet<Integer>> activeYearsByActor = new HashMap<>();
         HashSet<String> exclusions = new HashSet<String>(toExclude);
-        try {
-            while (activeYears.next()) {
-                if (null == activeYearsByActor.get(activeYears.getInt("id"))) {
-                    if (!exclusions.contains(activeYears.getString("name"))) {
-                        activeYearsByActor.put(activeYears.getInt("id"), new HashSet<Integer>());
-                        nameById.put(activeYears.getInt("id"), activeYears.getString("name"));
-                    }
-                }
-                activeYearsByActor.get(activeYears.getInt("id")).add(activeYears.getInt("year"));
-            }
-        } catch (java.sql.SQLException e) {
-            e.printStackTrace();
+        while (activeYears.next()) {
+             if (null == activeYearsByActor.get(activeYears.getInt("id"))) {
+                 if (!exclusions.contains(activeYears.getString("name"))) {
+                      activeYearsByActor.put(activeYears.getInt("id"), new HashSet<Integer>());
+                      nameById.put(activeYears.getInt("id"), activeYears.getString("name"));
+                 }
+             }
+             if(activeYearsByActor.get(activeYears.getInt("id")) != null)
+             activeYearsByActor.get(activeYears.getInt("id")).add(activeYears.getInt("year"));
         }
-
         // iteratively...
         Integer maxYearsActorId = -1;
         Integer maxYears = -1;

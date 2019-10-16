@@ -22,7 +22,7 @@ public class Handler {
         graphHandler = new GraphHandler(this);
         similarActors = new SimilarActors(this);
         yearCover = new YearCover(this);
-       // databaseConnect();
+        databaseConnect();
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
@@ -98,9 +98,6 @@ public class Handler {
         String url = "jdbc:postgresql://db-315.cse.tamu.edu/mikechacko_db";
         String user = "mikechacko";
         String password = "studentpwd";
-
-        System.out.println("Attempting to connect to database...");
-
         try {
             Class.forName(driverName);
             this.conn = DriverManager.getConnection(url, user, password);
