@@ -49,17 +49,12 @@ public class GraphHandler {
         exclude= new ArrayList<>();
     }
 
-    private void parseIds(String actor1, String actor2, ArrayList<String> exclude){
-        try {
-            this.actor1 = getMostPopularActor(actor1);
-            this.actor2 = getMostPopularActor(actor2);
-            this.exclude.clear();
-            for (String actor : exclude){
-                this.exclude.add(getMostPopularActor(actor));
-            }
-        } catch (Exception e){
-            System.out.println("fuck");
-            System.exit(1);
+    private void parseIds(String actor1, String actor2, ArrayList<String> exclude)throws java.sql.SQLException {
+        this.actor1 = getMostPopularActor(actor1);
+        this.actor2 = getMostPopularActor(actor2);
+        this.exclude.clear();
+        for (String actor : exclude) {
+            this.exclude.add(getMostPopularActor(actor));
         }
     }
 
