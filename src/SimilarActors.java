@@ -40,9 +40,19 @@ public class SimilarActors {
             getAllCharacters();
         }
 
+        if(movie1.equalsIgnoreCase(movie2)){
+            return "Can't compare the same movie!";
+        }
+
         // Get a list of the actors in both movies
         HashSet<Actor> actorsInMovie1 = getActorsInMovie(movie1);
+        if(actorsInMovie1 == null) {
+            return "Can't find movie '" + movie1 + "'!";
+        }
         HashSet<Actor> actorsInMovie2 = getActorsInMovie(movie2);
+        if(actorsInMovie2 == null) {
+            return "Can't find movie '" + movie2 + "'!";
+        }
 
         /*
         *  For each actor in both movies, calculate important stats about them
@@ -65,7 +75,7 @@ public class SimilarActors {
         for(Actor a1 : actorsInMovie1) {
             for(Actor a2 : actorsInMovie2) {
                 double score = getSimilarityScore(a1, a2);
-                if(score > maxScore) {
+                if(score > maxScore && !(a1.equals(a2))) {
                     maxScore = score;
                     mostSimilarActor1 = a1;
                     mostSimilarActor2 = a2;
@@ -208,7 +218,7 @@ public class SimilarActors {
         }
 
         if(list.isEmpty()){
-            throw new java.sql.SQLException(movie + " is not a valid movie!");
+            return null;
         }
 
         return list;
