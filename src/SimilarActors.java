@@ -95,7 +95,7 @@ public class SimilarActors {
         // Store the actor's names
         a1.name = getActorName(a1.castid);
         a2.name = getActorName(a2.castid);
-        String output = a1.name + " and " + a2.name + " are the most similar actors. ";
+        String output = a1.name + " and " + a2.name + " are the most similar actors. \n";
 
         int mutualMovies = 0;
         //Number of mutual movies worked on + number of common movie genres
@@ -104,12 +104,12 @@ public class SimilarActors {
             Set<Movie> commonMovies = new HashSet<Movie>(a1.moviesActedIn);
             commonMovies.retainAll(a2.moviesActedIn);
             mutualMovies += commonMovies.size();
-            output += "They have acted in " + mutualMovies + " mutual movies! ";
+            output += "They have acted in " + mutualMovies + " mutual movies. \n";
 
             // Check if they usually act in the same type of movies
             String genre = getMostFrequentGenre(a1);
             if(genre.equals(getMostFrequentGenre(a2))){
-                output += "Both of their most popular genres are " + genre + "! ";
+                output += "Both of their most popular genres are " + genre + ". \n";
             }
         }
 
@@ -120,7 +120,7 @@ public class SimilarActors {
             Set<Actor> commonActors = new HashSet<Actor>(a1.actorsWorkedWith);
             commonActors.retainAll(a2.actorsWorkedWith);
             mutualCostars += commonActors.size();
-            output += "They have " + mutualCostars + " mutual costars! ";
+            output += "They have " + mutualCostars + " mutual costars. \n";
         }
 
         return output;
@@ -228,7 +228,7 @@ public class SimilarActors {
     HashSet<Actor> getActorsIDsInMovie(int movieid) throws java.sql.SQLException {
         ArrayList<Integer> alist = actorsInMovie.get(movieid);
         if(alist == null){
-            return null;
+            return new HashSet<Actor>();
         }
 
         HashSet<Actor> list = new HashSet<Actor>();

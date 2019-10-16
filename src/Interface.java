@@ -192,6 +192,7 @@ public class Interface extends JFrame implements ActionListener{
                 }
             }
         } catch (Exception except) {
+            except.printStackTrace();
             output.showMessageDialog(null,"Try again.");
         }
     }
