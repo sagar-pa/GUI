@@ -22,7 +22,7 @@ public class Handler {
         graphHandler = new GraphHandler(this);
         similarActors = new SimilarActors(this);
         yearCover = new YearCover(this);
-        databaseConnect();
+       // databaseConnect();
     }
 
     public String search(Integer questionNum, ArrayList<ArrayList<String>> input) throws java.sql.SQLException {
