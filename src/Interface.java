@@ -192,7 +192,6 @@ public class Interface extends JFrame implements ActionListener{
                 }
             }
         } catch (Exception except) {
-            except.printStackTrace();
             output.showMessageDialog(null,"Try again.");
         }
     }
@@ -206,13 +205,13 @@ public class Interface extends JFrame implements ActionListener{
                 return false;
             }
             Input.add(new ArrayList<String>());
-            Input.get(0).add(q1In[0].getText().replaceAll("'","''"));
-            Input.get(0).add(q1In[1].getText().replaceAll("'","''"));
+            Input.get(0).add(q1In[0].getText().replaceAll("'","''").strip());
+            Input.get(0).add(q1In[1].getText().replaceAll("'","''").strip());
             if (!q1In[2].getText().isBlank()){
                 String to_exclude[]= q1In[2].getText().split(",");
                 Input.add(new ArrayList<String>());
                 for(String temp:to_exclude){
-                    Input.get(1).add(temp.replaceAll("'","''"));
+                    Input.get(1).add(temp.replaceAll("'","''").strip());
                 }
             }
         }
@@ -237,7 +236,7 @@ public class Interface extends JFrame implements ActionListener{
                     String to_exclude[]= q2In[2].getText().split(",");
                     Input.add(new ArrayList<String>());
                     for(String temp:to_exclude){
-                        Input.get(1).add(temp.replaceAll("'","''"));
+                        Input.get(1).add(temp.replaceAll("'","''").strip());
                     }
                 }
 
@@ -255,8 +254,8 @@ public class Interface extends JFrame implements ActionListener{
                 return false;
             }
             Input.add(new ArrayList<String>());
-            Input.get(0).add(q3In[0].getText().replaceAll("'","''"));
-            Input.get(0).add(q3In[1].getText().replaceAll("'","''"));
+            Input.get(0).add(q3In[0].getText().replaceAll("'","''").strip());
+            Input.get(0).add(q3In[1].getText().replaceAll("'","''").strip());
         }
         return true;
     }
